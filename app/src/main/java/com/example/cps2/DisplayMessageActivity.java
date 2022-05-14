@@ -20,12 +20,24 @@ public class DisplayMessageActivity extends AppCompatActivity {
     private Sensor gyroscopeSensor;
     private SensorEventListener gyroscopeEventListener;
 
+
     private int count = 0;
+
+    private void setSensors(){
+        sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        gyroscopeSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+
+        if(gyroscopeSensor == null){
+            Toast.makeText(this, "The Device has no Gyroscope", Toast.LENGTH_SHORT).show();
+            finish();
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_display_message);
+        setSensors();
 
         Intent intent = getIntent();
         String message = intent.getStringExtra(MainActivity.EXTRA_MESSAGE);
@@ -36,13 +48,8 @@ public class DisplayMessageActivity extends AppCompatActivity {
 
         textView.setText(message);
 
-        sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-        gyroscopeSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
 
-        if(gyroscopeSensor == null){
-            Toast.makeText(this, "The Device has no Gyroscope", Toast.LENGTH_SHORT).show();
-            finish();
-        }
+
         textView.setText("0");
         textView2.setText("0");
         textView3.setText("0");
