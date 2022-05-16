@@ -11,11 +11,8 @@
         android:theme="@style/Theme.CPS2">
         <activity
             android:name=".ChartActivity"
-            android:exported="false" />
-        <activity
-            android:name=".DisplayMessageActivity"
-            android:exported="false"
-            android:parentActivityName=".MainActivity">
+            android:parentActivityName=".MainActivity"
+            android:exported="false" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainActivity" />

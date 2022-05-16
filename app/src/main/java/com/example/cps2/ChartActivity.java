@@ -1,28 +1,18 @@
 package com.example.cps2;
 
-import static java.lang.Math.abs;
-import static java.lang.Math.acos;
-import static java.lang.Math.cos;
-import static java.lang.Math.max;
-import static java.lang.Math.min;
-import static java.lang.Math.sin;
-import static java.lang.Math.toDegrees;
+import static java.lang.Math.*;
 
 import androidx.appcompat.app.*;
 
-import android.content.Context;
-import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
-import android.hardware.SensorManager;
+import android.content.*;
+import android.hardware.*;
 import android.os.*;
 import android.view.View;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.widget.*;
 
-import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.charts.*;
 import com.github.mikephil.charting.data.*;
-import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
+import com.github.mikephil.charting.interfaces.datasets.*;
 
 import java.util.*;
 
@@ -41,18 +31,9 @@ public class ChartActivity extends AppCompatActivity {
 
     private double theta = 0;
     private float velocity = 0;
-    private float distance = 0;
     private float positionY = 0;
     private float positionZ = 0;
 
-
-    TextView textView;
-    TextView textView2;
-    TextView textView3;
-    TextView textView4;
-
-    private boolean rightRotate = false;
-    private float rotationSpeed;
 
     private void setSensors(){
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
@@ -70,16 +51,12 @@ public class ChartActivity extends AppCompatActivity {
         return new SensorEventListener() {
             @Override
             public void onSensorChanged(SensorEvent event) {
-                rotationSpeed = event.values[0];
                 if(abs(event.values[0]) > 0.05){
                     theta += event.values[0] * 0.06;
                 }
-
             }
-
             @Override
             public void onAccuracyChanged(Sensor sensor, int accuracy) {
-
             }
         };
     }
@@ -91,10 +68,9 @@ public class ChartActivity extends AppCompatActivity {
                 if(abs(event.values[1]) > 0.05){
                     velocity += event.values[1] * 0.06;
                     velocity = max(velocity, 0);
-                    distance += velocity * 0.06;
 
-                    positionY += velocity * 0.06 * cos(abs(theta) > 0.15 ? theta : 0);
-                    positionZ += velocity * 0.06 * sin(abs(theta) > 0.15 ? theta : 0);
+                    positionY += velocity * 0.06 * cos(abs(theta) > 0.1 ? theta : 0);
+                    positionZ += velocity * 0.06 * sin(abs(theta) > 0.1 ? theta : 0);
 
                     System.out.println(theta);
 
@@ -119,17 +95,19 @@ public class ChartActivity extends AppCompatActivity {
                     mpLineChart.setDrawBorders(false);
 
 
+                    mpLineChart.getAxisLeft().setAxisMaximum(0.25f);
+                    mpLineChart.getAxisLeft().setAxisMinimum(-0.25f);
+
+                    mpLineChart.getAxisRight().setAxisMaximum(0.25f);
+                    mpLineChart.getAxisRight().setAxisMinimum(-0.25f);
 
                     mpLineChart.setData(data);
                     mpLineChart.invalidate();
-
-
                 }
             }
 
             @Override
             public void onAccuracyChanged(Sensor sensor, int accuracy) {
-
             }
         };
     }
@@ -138,24 +116,10 @@ public class ChartActivity extends AppCompatActivity {
         return new SensorEventListener() {
             @Override
             public void onSensorChanged(SensorEvent event) {
-//                theta = acos(min(event.values[2] / 9.8, 1));
-
-
-//                if(dataValues.size() > 100){
-//                    dataValues.remove(0);
-//                }
-
-//                textView.setText(String.format("Y: %s", positionY));
-//                textView2.setText(String.format("Z: %s", positionZ));
-//                textView3.setText(String.format("theta: %s", theta));
-//                textView4.setText(String.format("speed: %s", rightRotate));
-
-
             }
 
             @Override
             public void onAccuracyChanged(Sensor sensor, int accuracy) {
-
             }
         };
     }
@@ -165,11 +129,6 @@ public class ChartActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chart);
         setSensors();
-
-        textView = findViewById(R.id.textView);
-        textView2 = findViewById(R.id.textView2);
-        textView3 = findViewById(R.id.textView3);
-        textView4 = findViewById(R.id.textView4);
 
         gyroscopeEventListener = getGyroscopeEventListener();
         linearAccEventListener = getLinearAccEventListener();
@@ -187,7 +146,6 @@ public class ChartActivity extends AppCompatActivity {
     public void restartActivity(View view){
         theta = 0;
         velocity = 0;
-        distance = 0;
         positionY = 0;
         positionZ = 0;
         dataValues.clear();
@@ -197,9 +155,9 @@ public class ChartActivity extends AppCompatActivity {
     @Override
     protected void onResume(){
         super.onResume();
-        sensorManager.registerListener(gyroscopeEventListener, gyroscopeSensor, 2);
-        sensorManager.registerListener(linearAccEventListener, linearAccSensor, 2);
-        sensorManager.registerListener(accEventListener, accSensor, 2);
+        sensorManager.registerListener(gyroscopeEventListener, gyroscopeSensor, SensorManager.SENSOR_DELAY_UI);
+        sensorManager.registerListener(linearAccEventListener, linearAccSensor, SensorManager.SENSOR_DELAY_UI);
+        sensorManager.registerListener(accEventListener, accSensor, SensorManager.SENSOR_DELAY_UI);
     }
 
     @Override
