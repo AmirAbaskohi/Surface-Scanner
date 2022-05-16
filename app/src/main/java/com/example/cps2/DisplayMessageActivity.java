@@ -22,10 +22,14 @@ public class DisplayMessageActivity extends AppCompatActivity {
 
 
     private int count = 0;
+    float m = 0;
+
+    private float velocity = 0;
+    private float position = 0;
 
     private void setSensors(){
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-        gyroscopeSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        gyroscopeSensor = sensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
 
         if(gyroscopeSensor == null){
             Toast.makeText(this, "The Device has no Gyroscope", Toast.LENGTH_SHORT).show();
@@ -40,13 +44,10 @@ public class DisplayMessageActivity extends AppCompatActivity {
         setSensors();
 
         Intent intent = getIntent();
-        String message = intent.getStringExtra(MainActivity.EXTRA_MESSAGE);
         TextView textView = findViewById(R.id.textView);
         TextView textView2 = findViewById(R.id.textView2);
         TextView textView3 = findViewById(R.id.textView3);
         TextView textView4 = findViewById(R.id.textView4);
-
-        textView.setText(message);
 
 
 
@@ -57,18 +58,41 @@ public class DisplayMessageActivity extends AppCompatActivity {
         gyroscopeEventListener = new SensorEventListener() {
             @Override
             public void onSensorChanged(SensorEvent event) {
+
+
+
+                if (abs(event.values[1]) > m){
+                    m = abs(event.values[1]);
+                }
+
+                if(abs(event.values[1]) > 0.05){
+                    velocity += event.values[1] * 0.06;
+                    velocity = max(velocity, 0);
+                    position += velocity * 0.06;
+                }
+
+
+
                 count += 1;
-                if(event.values[0] > 0.5f || event.values[0] < -0.5f){
-                    textView.setText("X: " + String.valueOf(event.values[0]));
-                }
-                else
-                if(event.values[1] > 0.5f || event.values[1] < -0.5f){
-                    textView2.setText("Y: " + String.valueOf(event.values[1]));
-                }
-                if(event.values[2] > 0.5f || event.values[2] < -0.5f){
-                    textView3.setText("Z: " + String.valueOf(event.values[2]));
-                }
-                textView4.setText("Theta: " + toDegrees(acos(min(event.values[2] / 9.8, 1))));
+
+
+                textView.setText(String.format("count: %s", count));
+                textView2.setText(String.format("Y: %s", event.values[1]));
+                textView3.setText(String.format("velocity: %s", velocity));
+                textView4.setText(String.format("Position: %s", position));
+
+
+//                if(event.values[0] > 0.5f || event.values[0] < -0.5f){
+//                    textView.setText(String.format("X: %s", event.values[0]));
+//                }
+//                else
+//                if(event.values[1] > 0.5f || event.values[1] < -0.5f){
+//                    textView2.setText(String.format("Y: %s", event.values[1]));
+//                }
+//                if(event.values[2] > 0.5f || event.values[2] < -0.5f){
+//                    textView3.setText(String.format("Z: %s", event.values[2]));
+//                }
+//                textView4.setText(String.format("Position: %s", position));
 
             }
 
@@ -81,7 +105,7 @@ public class DisplayMessageActivity extends AppCompatActivity {
     @Override
     protected void onResume(){
         super.onResume();
-        sensorManager.registerListener(gyroscopeEventListener, gyroscopeSensor, 3);
+        sensorManager.registerListener(gyroscopeEventListener, gyroscopeSensor, 2);
     }
 
     @Override
