@@ -37,10 +37,7 @@ public class ChartActivity extends AppCompatActivity {
     private SensorEventListener linearAccEventListener;
     private SensorEventListener accEventListener;
 
-
-
     ArrayList<Entry> dataValues = new ArrayList<>();
-    private int count = 0;
 
     private double theta = 0;
     private float velocity = 0;
@@ -103,18 +100,29 @@ public class ChartActivity extends AppCompatActivity {
 
                     dataValues.add(new Entry(positionY, positionZ));
 
-                if(dataValues.size() > 100){
-                    dataValues.remove(0);
-                }
+                    if(dataValues.size() > 300){
+                        dataValues.remove(0);
+                    }
 
                     LineChart mpLineChart;
                     mpLineChart = (LineChart) findViewById(R.id.line_chart);
+
                     LineDataSet lineDataSet1 = new LineDataSet(dataValues, "Data Set 1");
                     ArrayList<ILineDataSet> dataSets = new ArrayList<>();
                     dataSets.add(lineDataSet1);
                     LineData data = new LineData(dataSets);
+
+                    lineDataSet1.setDrawCircles(false);
+                    lineDataSet1.setDrawValues(false);
+
+                    mpLineChart.setDrawGridBackground(false);
+                    mpLineChart.setDrawBorders(false);
+
+
+
                     mpLineChart.setData(data);
                     mpLineChart.invalidate();
+
 
                 }
             }
@@ -130,7 +138,6 @@ public class ChartActivity extends AppCompatActivity {
         return new SensorEventListener() {
             @Override
             public void onSensorChanged(SensorEvent event) {
-                count += 1;
 //                theta = acos(min(event.values[2] / 9.8, 1));
 
 
@@ -175,6 +182,16 @@ public class ChartActivity extends AppCompatActivity {
 
     public void startActivity(View view){
         onResume();
+    }
+
+    public void restartActivity(View view){
+        theta = 0;
+        velocity = 0;
+        distance = 0;
+        positionY = 0;
+        positionZ = 0;
+        dataValues.clear();
+        onRestart();
     }
 
     @Override
