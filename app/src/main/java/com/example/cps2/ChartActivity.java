@@ -34,6 +34,8 @@ public class ChartActivity extends AppCompatActivity {
     private float positionY = 0;
     private float positionZ = 0;
 
+    private float DELTA_T = 0.06f;
+
 
     private void setSensors(){
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
@@ -52,7 +54,7 @@ public class ChartActivity extends AppCompatActivity {
             @Override
             public void onSensorChanged(SensorEvent event) {
                 if(abs(event.values[0]) > 0.05){
-                    theta += event.values[0] * 0.06;
+                    theta += event.values[0] * DELTA_T;
                 }
             }
             @Override
@@ -66,11 +68,11 @@ public class ChartActivity extends AppCompatActivity {
             @Override
             public void onSensorChanged(SensorEvent event) {
                 if(abs(event.values[1]) > 0.05){
-                    velocity += event.values[1] * 0.06;
+                    velocity += event.values[1] * DELTA_T;
                     velocity = max(velocity, 0);
 
-                    positionY += velocity * 0.06 * cos(abs(theta) > 0.1 ? theta : 0);
-                    positionZ += velocity * 0.06 * sin(abs(theta) > 0.1 ? theta : 0);
+                    positionY += velocity * DELTA_T * cos(abs(theta) > 0.1 ? theta : 0);
+                    positionZ += velocity * DELTA_T * sin(abs(theta) > 0.1 ? theta : 0);
 
                     System.out.println(theta);
 
